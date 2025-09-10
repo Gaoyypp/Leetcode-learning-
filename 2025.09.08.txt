@@ -1,0 +1,165 @@
+1094.拼车
+class Solution {
+public:
+    bool carPooling(vector<vector<int>>& trips, int capacity) {
+        vector<int> nums(1005,0);
+        vector<int> diff(1010,0);
+        for(vector<int> trip :trips)
+        {
+            int num=trip[0];
+            if(num>capacity)
+            return false;
+            int left=trip[1];
+            int right=trip[2];
+
+            diff[left]+=num;
+            diff[right]-=num;
+        }
+        nums[0]=diff[0];
+        for(int i=1;i<1005;i++)
+        {
+            nums[i]=nums[i-1]+diff[i];
+            if(nums[i]>capacity)
+            return false;
+        }
+        return true;
+    }
+};
+76.最小覆盖字串
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        unordered_map<char, int> need;
+        unordered_map<char, int> window;
+
+        for (char ch : t) {
+            need[ch]++;
+        }
+
+        int left = 0;
+        int right = 0;
+        int val = 0;
+        int len = 1e6;
+        int start = 0;
+
+        while (right < s.size()) {
+            char c = s[right];
+            right++;
+            if (need.count(c)) {
+                window[c]++;
+                if (window[c] == need[c]) {
+                    val++;
+                }
+            }
+
+            while (val == need.size()) {
+
+                if (right - left < len) {
+                    start = left;
+                    len = right - left;
+                }
+
+                int d = s[left];
+                left++;
+                if (need.count(d)) {
+                    if (window[d] == need[d]) {
+                        val--;
+                    }
+                    window[d]--;
+                }
+            }
+        }
+
+        return (len == 1e6 )? "" : s.substr(start, len);
+    }
+};
+567.字符串的排列
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        unordered_map<char, int> need, window;
+        for (char ch : s1) {
+            need[ch]++;
+        }
+
+        int left = 0, right = 0, val = 0;
+        while (right < s2.size()) {
+            int c = s2[right];
+            right++;
+
+            if (need.count(c)) {
+                window[c]++;
+                if (window[c] == need[c])
+                    val++;
+            }
+
+            while(right - left >= s1.size()) {
+
+                if (val == need.size())
+                    return true;
+
+                int d = s2[left];
+                left++;
+
+                if (need.count(d)) {
+
+                    if (window[d] == need[d])
+                        val--;
+                    window[d]--;
+                }
+            }
+        }
+        return false;
+    }
+};
+438找到字符串中所有字母异位词
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        vector<int> ans;
+        unordered_map<char,int> need,window;
+
+        int left=0,right=0,val=0;
+
+        for(char ch:p)need[ch]++;
+
+        while(right<s.size()){
+            int c=s[right];
+            right++;
+
+            if(need.count(c)){
+                window[c]++;
+                if(window[c]==need[c]){
+                    val++;
+                }
+            }
+
+
+            if(right-left>=p.size()){
+                if(val==need.size())
+                ans.push_back(left);
+
+                int d=s[left];
+                left++;
+
+                if(need.count(d)){
+                    if(window[d]==need[d]){
+                        val--;
+                    }
+                    window[d]--;
+                }
+            }
+        }
+        return ans;
+    }
+};
+
+
+
+
+滑动窗口：
+		用两个指针维护一个窗口，要查找子区间是否符合条件时使用，目前刷了3道相关的题目，都是配合哈希表（unordered_map）使用的
+
+		使用时应注意什么时候扩大窗口，并更新好相关的数据
+					什么时候搜小窗口，并更新好相关的数据
+					什么时候此区间符合条件，将此区间记录下来
